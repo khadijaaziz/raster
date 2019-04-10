@@ -1,0 +1,38 @@
+library(raster)
+library(sf)
+library(dplyr)
+
+
+
+
+#loading all input rasters
+
+generic_rasts <- list.files('path_to_generic_rasters', pattern = ".tif$", full.names = TRUE)
+sp_rasts      <- list.files('path_to_specific_rasters' ,pattern = ".tif$", full.names = TRUE)
+
+generic_rasts1 <- list.files('path_to_generic_rasters', pattern = ".tif$", full.names = F)
+sp_rasts1      <- list.files('path_to_specific_rasters' ,pattern = ".tif$", full.names = F)
+
+
+#x=longitude and y=latitude
+r = raster(xmn=31.265,xmx=48.545,ymn=27.501,ymx=37.729,nrow=100,ncol=100)
+r[]=runif(100*100)
+
+plot(r, col = "black", axes = FALSE)
+# 
+plot(r)
+
+
+# writeRaster(clip, '/home/zakaria/zakaria/Landrace Gap Analysis/input_data/testraster/test.tif', overwrite = TRUE)
+r_stk <- stack(generic_rasts)
+for (i in 1:length(generic_rasts)) {
+  clip <- raster::crop(r_stk[[i]], r)
+  writeRaster(clip, paste0('path_to_output_generic_rasters',generic_rasts1[i]), overwrite = TRUE)
+}
+
+
+r_stk <- stack(sp_rasts)
+for (i in 1:length(sp_rasts)) {
+  clip <- raster::crop(r_stk[[i]], r)
+  writeRaster(clip, paste0('path_to_output_specific_rasters',sp_rasts1[i]), overwrite = TRUE)
+}
